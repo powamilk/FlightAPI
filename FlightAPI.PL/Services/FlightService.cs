@@ -57,8 +57,8 @@ namespace FlightAPI.PL.Services
             try
             {
                 if (request.Capacity <= 0 ||
-                    string.IsNullOrWhiteSpace(request.Model) ||
-                    string.IsNullOrWhiteSpace(request.Manufacturer) ||
+                    string.IsNullOrWhiteSpace(request.Model) || request.Model.Length > 100 ||
+                    string.IsNullOrWhiteSpace(request.Manufacturer) || request.Manufacturer.Length > 100 ||
                     !new[] { "hoạt động", "bảo trì", "ngừng hoạt động" }.Contains(request.Status))
                 {
                     errorMessage = "Dữ liệu đầu vào không hợp lệ. Vui lòng kiểm tra lại các trường thông tin.";
@@ -97,8 +97,8 @@ namespace FlightAPI.PL.Services
                 }
 
                 if (request.Capacity <= 0 ||
-                    string.IsNullOrWhiteSpace(request.Model) ||
-                    string.IsNullOrWhiteSpace(request.Manufacturer) ||
+                    string.IsNullOrWhiteSpace(request.Model) || request.Model.Length > 100 ||
+                    string.IsNullOrWhiteSpace(request.Manufacturer) || request.Manufacturer.Length > 100 ||
                     !new[] { "hoạt động", "bảo trì", "ngừng hoạt động" }.Contains(request.Status))
                 {
                     errorMessage = "Dữ liệu đầu vào không hợp lệ. Vui lòng kiểm tra lại các trường thông tin.";

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlightAPI.PL.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/api/airplanes")]
     [ApiController]
     public class FlightsController : ControllerBase
     {
@@ -15,7 +15,7 @@ namespace FlightAPI.PL.Controllers
             _flightService = flightService;
         }
 
-        [HttpGet("GetAllFlights")]
+        [HttpGet("")]
         public IActionResult GetAllFlights()
         {
             var result = _flightService.GetList(out string errorMessage);
@@ -25,7 +25,7 @@ namespace FlightAPI.PL.Controllers
             return NotFound(errorMessage);
         }
 
-        [HttpGet("GetFlightById/{id}")]
+        [HttpGet("{id}")]
         public IActionResult GetFlightById(int id)
         {
             var result = _flightService.GetById(id, out string errorMessage);
@@ -35,7 +35,7 @@ namespace FlightAPI.PL.Controllers
             return NotFound(errorMessage);
         }
 
-        [HttpPost("CreateFlight")]
+        [HttpPost("")]
         public IActionResult CreateFlight([FromBody] CreateFlightVM request)
         {
             var result = _flightService.Create(request, out string errorMessage);
@@ -48,27 +48,31 @@ namespace FlightAPI.PL.Controllers
             return BadRequest(errorMessage);
         }
 
-        [HttpPut("UpdateFlight/{id}")]
+        [HttpPut("{id}")]
         public IActionResult UpdateFlight(int id, [FromBody] UpdateFlightVM request)
         {
             var result = _flightService.Update(id, request, out string errorMessage);
-            if (result)
+            if (!result)
             {
-                var updatedFlight = _flightService.GetById(id, out _);
-                return Ok(updatedFlight);
+                if (errorMessage == "Không tìm thấy máy bay với ID này." )
+                {
+                    return NotFound(errorMessage);
+                }
+                return BadRequest(errorMessage);
             }
-
-            return BadRequest(errorMessage);
+            var updatedFlight = _flightService.GetById(id, out _);
+            return Ok(updatedFlight); 
         }
 
-        [HttpDelete("DeleteFlight/{id}")]
+        [HttpDelete("{id}")]
         public IActionResult DeleteFlight(int id)
         {
             var result = _flightService.Delete(id, out string errorMessage);
-            if (result)
-                return NoContent();
-
-            return BadRequest(errorMessage);
+            if(!result)
+            {
+                return NotFound(errorMessage);
+            }    
+            return NoContent();
         }
     }
 }
