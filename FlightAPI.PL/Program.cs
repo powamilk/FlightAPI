@@ -1,15 +1,21 @@
-﻿using FlightAPI.PL.Services;
+﻿using FlightAPI.PL;
+using AutoMapper;
+using FlightAPI.PL.MappingProfile;
+using FlightAPI.PL.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+// Cấu hình AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // Đăng ký IFlightService vào Dependency Injection container
 builder.Services.AddScoped<IFlightService, FlightService>();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -21,9 +27,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

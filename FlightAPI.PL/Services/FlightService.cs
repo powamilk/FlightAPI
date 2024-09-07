@@ -1,4 +1,5 @@
-﻿using FlightAPI.PL.Entities;
+﻿using AutoMapper;
+using FlightAPI.PL.Entities;
 using FlightAPI.PL.ViewModel.Flight;
 
 namespace FlightAPI.PL.Services
@@ -7,10 +8,12 @@ namespace FlightAPI.PL.Services
     {
         private static List<Flight> _flights = new();
         private readonly ILogger<FlightService> _logger;
+        private readonly IMapper _mapper;
 
-        public FlightService(ILogger<FlightService> logger)
+        public FlightService(ILogger<FlightService> logger, IMapper mapper)
         {
             _logger = logger;
+            _mapper = mapper;
         }
 
         public List<FlightVM> GetList(out string errorMessage)
@@ -18,14 +21,7 @@ namespace FlightAPI.PL.Services
             if (_flights.Any())
             {
                 errorMessage = null;
-                return _flights.Select(f => new FlightVM
-                {
-                    Id = f.Id,
-                    Model = f.Model,
-                    Manufacturer = f.Manufacturer,
-                    Capacity = f.Capacity,
-                    Status = f.Status
-                }).ToList();
+                return _mapper.Map<List<FlightVM>>(_flights);
             }
 
             errorMessage = "Không có máy bay nào trong danh sách.";
@@ -38,14 +34,7 @@ namespace FlightAPI.PL.Services
             if (flight != null)
             {
                 errorMessage = null;
-                return new FlightVM
-                {
-                    Id = flight.Id,
-                    Model = flight.Model,
-                    Manufacturer = flight.Manufacturer,
-                    Capacity = flight.Capacity,
-                    Status = flight.Status
-                };
+                return _mapper.Map<FlightVM>(flight);
             }
 
             errorMessage = "Không tìm thấy máy bay với ID này.";
@@ -65,14 +54,8 @@ namespace FlightAPI.PL.Services
                     return false;
                 }
 
-                var flight = new Flight
-                {
-                    Id = _flights.Any() ? _flights.Max(f => f.Id) + 1 : 1,
-                    Model = request.Model,
-                    Manufacturer = request.Manufacturer,
-                    Capacity = request.Capacity,
-                    Status = request.Status
-                };
+                var flight = _mapper.Map<Flight>(request);
+                flight.Id = _flights.Any() ? _flights.Max(f => f.Id) + 1 : 1;
 
                 _flights.Add(flight);
                 errorMessage = null;
@@ -105,10 +88,7 @@ namespace FlightAPI.PL.Services
                     return false;
                 }
 
-                flight.Model = request.Model;
-                flight.Manufacturer = request.Manufacturer;
-                flight.Capacity = request.Capacity;
-                flight.Status = request.Status;
+                _mapper.Map(request, flight);
 
                 errorMessage = null;
                 return true;
